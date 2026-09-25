@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hehelohe"
+version = "1.0.0"
+description = "hehelohe checks if an email is registered on 120+ sites (twitter, instagram, snapchat...) and can retrieve info via forgotten-password flows. A rebranded, hardened holehe reboot with proxy support, retries and a plugin system."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "GPL-3.0" }
+authors = [{ name = "i-vt" }]
+keywords = ["osint", "email", "recon", "holehe", "hehelohe"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+    "Topic :: Security",
+]
+dependencies = [
+    # <1.0 keeps pip on stable httpx 0.x releases (no incompatible pre-releases)
+    "httpx[socks]>=0.27,<1.0",
+    "trio>=0.22",
+    "tqdm",
+    "termcolor",
+    "beautifulsoup4>=4.12",
+    "colorama",
+    "tomli; python_version < '3.11'",
+    # Python 3.13 removed the stdlib cgi module some old deps still import
+    "legacy-cgi; python_version >= '3.13'",
+]
+
+[project.urls]
+Homepage = "https://github.com/i-vt/hehelohe"
+
+[project.scripts]
+hehelohe = "hehelohe.core:main"
+
+[tool.setuptools.packages.find]
+include = ["hehelohe*"]
+
+[tool.setuptools.package-data]
+hehelohe = ["defaults.toml"]

@@ -1,0 +1,217 @@
+# ============================================================================
+# hehelohe default configuration
+#
+# Every tunable ("magic number") of the tool lives here. Override any value
+# with your own config file (see hehelohe.toml.example):
+#   * ./hehelohe.toml
+#   * ~/.config/hehelohe/hehelohe.toml
+#   * or any file passed with --config /path/to/file.toml
+# CLI flags always win over file values.
+# ============================================================================
+
+[core]
+# Network timeout in seconds for each HTTP request (default 10).
+timeout = 10
+# Maximum number of site checks running at the same time. Unbounded
+# concurrency floods endpoints and causes false rate-limits.
+concurrency = 10
+# Check PyPI for a newer hehelohe release on startup (never blocks,
+# never auto-installs, silently skipped on any network error).
+check_update = true
+update_url = "https://pypi.org/pypi/hehelohe/json"
+update_timeout = 5
+# Clear the terminal before printing results.
+clear_terminal = true
+# Regex used to validate the target email on the CLI.
+email_regex = '\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+
+[retry]
+# How many extra attempts each site gets after the first one.
+max_retries = 2
+# Exponential backoff: delay = min(backoff_base * backoff_factor**attempt,
+# backoff_max) + uniform(0, backoff_jitter)   -- all in seconds.
+backoff_base = 1.0
+backoff_factor = 2.0
+backoff_max = 30.0
+backoff_jitter = 0.5
+# Retry when a site answers with a rate-limit...
+retry_on_rate_limit = true
+# ...and/or when the module throws an error (network failure, parse error).
+retry_on_error = true
+# After the main pass, re-run sites that are still rate-limited, once,
+# slowly. Recovers a lot of false rate-limits.
+second_pass = true
+second_pass_delay = 5.0
+second_pass_concurrency = 3
+
+[proxy]
+# Master switch for all proxying.
+enabled = false
+# Inline list of proxy URLs. Schemes: http, https, socks5.
+# Credentials go in the URL: "http://user:pass@host:port"
+proxies = []
+# Optional text file with one proxy URL per line ('#' comments allowed).
+proxy_file = ""
+# How proxies are picked for each site check: "round-robin" or "random".
+rotation = "round-robin"
+# A proxy is benched after this many consecutive connection failures.
+max_failures = 3
+
+# Convenience block for residential-proxy gateway providers: instead of
+# writing full URLs in [proxy].proxies, fill in the gateway here and
+# hehelohe builds the URL for you.
+[proxy.residential]
+enabled = false
+protocol = "http"          # "http" | "https" | "socks5"
+host = ""                  # e.g. "gate.residential-provider.com"
+port = 0                   # e.g. 7000
+username = ""              # may contain {session} -> random session id
+password = ""
+# Generate a fresh {session} id for every site check (rotating exit IPs)
+# instead of one sticky session for the whole run.
+session_per_module = false
+session_length = 8
+
+[modules]
+# Modules that use the "forgotten password" flow. Excluded when the
+# --no-password-recovery / -NP flag is given.
+password_recovery = ["adobe", "mail_ru", "odnoklassniki", "samsung"]
+# Extra directories scanned for user-written .py modules, in addition to
+# ~/.config/hehelohe/plugins and ./hehelohe_plugins
+plugin_dirs = []
+
+[output]
+# Result CSV files are named: <csv_prefix>_<timestamp>_<email>_results.csv
+csv_prefix = "hehelohe"
+# Print the [+]/[-]/[x]/[!] legend after each scan.
+show_legend = true
+
+# ============================================================================
+# Domain shown for each built-in module (used for display and for error
+# results when a module crashes before reporting its own domain).
+# New-style modules declare their own domain via @register(domain=...).
+# ============================================================================
+[domains]
+aboutme = "about.me"
+adobe = "adobe.com"
+amazon = "amazon.com"
+amocrm = "amocrm.com"
+anydo = "any.do"
+archive = "archive.org"
+armurerieauxerre = "armurerie-auxerre.com"
+atlassian = "atlassian.com"
+axonaut = "axonaut.com"
+babeshows = "babeshows.co.uk"
+badeggsonline = "badeggsonline.com"
+biosmods = "bios-mods.com"
+biotechnologyforums = "biotechnologyforums.com"
+bitmoji = "bitmoji.com"
+blablacar = "blablacar.com"
+blackworldforum = "blackworldforum.com"
+blip = "blip.fm"
+blitzortung = "forum.blitzortung.org"
+bluegrassrivals = "bluegrassrivals.com"
+bodybuilding = "bodybuilding.com"
+buymeacoffee = "buymeacoffee.com"
+cambridgemt = "discussion.cambridge-mt.com"
+caringbridge = "caringbridge.org"
+chinaphonearena = "chinaphonearena.com"
+clashfarmer = "clashfarmer.com"
+codecademy = "codecademy.com"
+codeigniter = "forum.codeigniter.com"
+codepen = "codepen.io"
+coroflot = "coroflot.com"
+cpaelites = "cpaelites.com"
+cpahero = "cpahero.com"
+cracked_to = "cracked.to"
+crevado = "crevado.com"
+deliveroo = "deliveroo.com"
+demonforums = "demonforums.net"
+devrant = "devrant.com"
+diigo = "diigo.com"
+discord = "discord.com"
+docker = "docker.com"
+dominosfr = "dominos.fr"
+duolingo = "duolingo.com"
+ebay = "ebay.com"
+ello = "ello.co"
+envato = "envato.com"
+eventbrite = "eventbrite.com"
+evernote = "evernote.com"
+facebook = "facebook.com"
+fanpop = "fanpop.com"
+firefox = "firefox.com"
+flickr = "flickr.com"
+freelancer = "freelancer.com"
+freiberg = "drachenhort.user.stunet.tu-freiberg.de"
+garmin = "garmin.com"
+github = "github.com"
+google = "google.com"
+gravatar = "gravatar.com"
+hubspot = "hubspot.com"
+imgur = "imgur.com"
+insightly = "insightly.com"
+instagram = "instagram.com"
+issuu = "issuu.com"
+koditv = "forum.kodi.tv"
+komoot = "komoot.com"
+laposte = "laposte.fr"
+lastfm = "last.fm"
+lastpass = "lastpass.com"
+mail_ru = "mail.ru"
+mybb = "community.mybb.com"
+myspace = "myspace.com"
+nattyornot = "nattyornotforum.nattyornot.com"
+naturabuy = "naturabuy.fr"
+ndemiccreations = "forum.ndemiccreations.com"
+nextpvr = "forums.nextpvr.com"
+nike = "nike.com"
+nimble = "nimble.com"
+nocrm = "nocrm.io"
+nutshell = "nutshell.com"
+odnoklassniki = "ok.ru"
+office365 = "office365.com"
+onlinesequencer = "onlinesequencer.net"
+parler = "parler.com"
+patreon = "patreon.com"
+pinterest = "pinterest.com"
+pipedrive = "pipedrive.com"
+plurk = "plurk.com"
+pornhub = "pornhub.com"
+protonmail = "protonmail.ch"
+quora = "quora.com"
+rambler = "rambler.ru"
+redtube = "redtube.com"
+replit = "replit.com"
+rocketreach = "rocketreach.co"
+samsung = "samsung.com"
+seoclerks = "seoclerks.com"
+sevencups = "7cups.com"
+smule = "smule.com"
+snapchat = "snapchat.com"
+soundcloud = "soundcloud.com"
+sporcle = "sporcle.com"
+spotify = "spotify.com"
+strava = "strava.com"
+taringa = "taringa.net"
+teamleader = "teamleader.eu"
+teamtreehouse = "teamtreehouse.com"
+tellonym = "tellonym.me"
+thecardboard = "thecardboard.org"
+therianguide = "forums.therian-guide.com"
+thevapingforum = "thevapingforum.com"
+tumblr = "tumblr.com"
+tunefind = "tunefind.com"
+twitter = "twitter.com"
+venmo = "venmo.com"
+vivino = "vivino.com"
+voxmedia = "voxmedia.com"
+vrbo = "vrbo.com"
+vsco = "vsco.co"
+wattpad = "wattpad.com"
+wordpress = "wordpress.com"
+xing = "xing.com"
+xnxx = "xnxx.com"
+xvideos = "xvideos.com"
+yahoo = "yahoo.com"
+zoho = "zoho.com"

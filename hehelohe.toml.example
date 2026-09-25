@@ -1,0 +1,48 @@
+# Example hehelohe configuration.
+# Copy to ./hehelohe.toml or ~/.config/hehelohe/hehelohe.toml and edit,
+# or point at any file with --config /path/to/file.toml.
+# You only need to list the values you want to change -- everything else
+# falls back to the built-in defaults.
+
+[core]
+timeout = 15            # seconds per HTTP request
+concurrency = 8         # simultaneous site checks
+check_update = false    # set true to be notified about new releases
+
+[retry]
+max_retries = 3
+backoff_base = 2.0      # seconds; delay = base * factor**attempt (+ jitter)
+backoff_factor = 2.0
+backoff_max = 60.0
+backoff_jitter = 1.0
+second_pass = true
+second_pass_delay = 10.0
+second_pass_concurrency = 2
+
+[proxy]
+enabled = true
+rotation = "round-robin"      # or "random"
+max_failures = 3              # bench a proxy after N consecutive failures
+proxies = [
+  # "http://user:pass@1.2.3.4:8080",
+  # "socks5://user:pass@5.6.7.8:1080",
+]
+proxy_file = ""               # e.g. "/home/me/proxies.txt" (one URL per line)
+
+# Residential proxy gateway: fill this in instead of writing full URLs.
+[proxy.residential]
+enabled = false
+protocol = "http"             # http | https | socks5
+host = "gate.residential-provider.example"
+port = 7000
+username = "customer-username-session-{session}"
+password = "secret"
+session_per_module = true     # fresh {session} (fresh exit IP) per site check
+session_length = 8
+
+[modules]
+plugin_dirs = []              # extra folders with your own .py modules
+
+[output]
+csv_prefix = "hehelohe"
+show_legend = true
